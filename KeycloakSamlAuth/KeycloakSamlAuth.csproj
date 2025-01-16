@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -7,12 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="certificates\instructions to generate certificate.txt" />
-    <None Remove="certificates\private-key-site-visits-dev.key" />
-    <None Remove="certificates\site-visits-dev.crt" />
-    <None Remove="certificates\site-visits-dev.p12" />
-    <None Remove="certificates\site-visits-dev.pfx" />
-    <None Remove="certificates\sslconfig.cnf" />
+    <Compile Remove="certificates\**" />
+    <Content Remove="certificates\**" />
+    <EmbeddedResource Remove="certificates\**" />
+    <None Remove="certificates\**" />
   </ItemGroup>
 
   <ItemGroup>
