@@ -3,6 +3,18 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Keycloak SAML 2 Authentication</h1>
+    @if (((System.Security.Claims.ClaimsIdentity)User.Identity).IsAuthenticated)
+    {
+
+        <form class="form-inline" asp-controller="Auth" asp-action="Logout">
+            <button type="submit" style="margin-left:auto; margin-right:auto" class="nav-link">Logout</button>
+        </form>
+
+    }
+    else
+    {
+
+        <p>Click on <a href="/Home/Secure">Secure Page</a> or <a href="@Url.Action("Login", "Auth", new { returnUrl = Context.Request.Path })">Login</a></p>
+    }
 </div>
