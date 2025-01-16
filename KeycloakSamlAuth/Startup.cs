@@ -37,27 +37,34 @@ namespace KeycloakSamlAuth
             services.BindConfig<Saml2Configuration>(Configuration, configKey, (serviceProvider, saml2Configuration) =>
             {
                 // Load signing certificate
-                if (AppEnvironment.IsDevelopment())
+                
+                if (AppEnvironment.IsEnvironment("Local"))
+                {
+                    saml2Configuration.SigningCertificate = CertificateUtil.Load(
+                        AppEnvironment.MapToPhysicalFilePath(Configuration[$"{configKey}:CertificateFile"]),
+                        Configuration[$"{configKey}:CertificatePassword"]
+                    );
+                }
+                else
                 {
                     string connectionString = Configuration[$"{configKey}:BlobStorage"];
                     string containerName = "kcdemo";
                     string blobName = "kcdemo_keystore.p12";
                     BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
                     BlobClient blobClient = blobServiceClient.GetBlobContainerClient(containerName).GetBlobClient(blobName);
-                    string signingCertificatePath = blobClient.Uri.ToString();
+                    string signingCertificatePath = blobClient.Uri.AbsolutePath;
 
-                    saml2Configuration.SigningCertificate = CertificateUtil.Load(
-                        signingCertificatePath,
-                        Configuration[$"{configKey}:CertificatePassword"]
-                    );
+                    using (var ms = new MemoryStream())
+                    {
+                        blobClient.DownloadTo(ms);
+                        byte[] certificate = ms.ToArray();
+                        saml2Configuration.SigningCertificate = X509CertificateLoader.LoadPkcs12(
+                            certificate,
+                            Configuration[$"{configKey}:CertificatePassword"]
+                        );
+                    }
 
-                }
-                else
-                {
-                    saml2Configuration.SigningCertificate = CertificateUtil.Load(
-                        AppEnvironment.MapToPhysicalFilePath(Configuration[$"{configKey}:CertificateFile"]),
-                        Configuration[$"{configKey}:CertificatePassword"]
-                    );
+
                 }
 
                 saml2Configuration.AllowedAudienceUris.Add(saml2Configuration.Issuer);
