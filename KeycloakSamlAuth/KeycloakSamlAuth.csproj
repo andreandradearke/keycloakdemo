@@ -8,9 +8,14 @@
 
   <ItemGroup>
     <Compile Remove="certificates\**" />
+    <Compile Remove="Properties\**" />
     <Content Remove="certificates\**" />
+    <Content Remove="Properties\**" />
     <EmbeddedResource Remove="certificates\**" />
+    <EmbeddedResource Remove="Properties\**" />
     <None Remove="certificates\**" />
+    <None Remove="Properties\**" />
+    <_WebToolingArtifacts Remove="Properties\**" />
   </ItemGroup>
 
   <ItemGroup>
