@@ -14,6 +14,7 @@ using System.Net.Http;
 using Microsoft.IdentityModel.Logging;
 using System.Security.Cryptography.X509Certificates;
 using System.IO;
+using Azure.Storage.Blobs;
 
 namespace KeycloakSamlAuth
 {
@@ -36,10 +37,28 @@ namespace KeycloakSamlAuth
             services.BindConfig<Saml2Configuration>(Configuration, configKey, (serviceProvider, saml2Configuration) =>
             {
                 // Load signing certificate
-                saml2Configuration.SigningCertificate = CertificateUtil.Load(
-                    AppEnvironment.MapToPhysicalFilePath(Configuration[$"{configKey}:CertificateFile"]),
-                    Configuration[$"{configKey}:CertificatePassword"]
-                );
+                if (AppEnvironment.IsDevelopment())
+                {
+                    saml2Configuration.SigningCertificate = CertificateUtil.Load(
+                        AppEnvironment.MapToPhysicalFilePath(Configuration[$"{configKey}:CertificateFile"]),
+                        Configuration[$"{configKey}:CertificatePassword"]
+                    );
+                }
+                else
+                {
+                    string connectionString = Configuration[$"{configKey}:BlobStorage"];
+                    string containerName = "kcdemo";
+                    string blobName = "kcdemo_keystore.p12";
+                    BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
+                    BlobClient blobClient = blobServiceClient.GetBlobContainerClient(containerName).GetBlobClient(blobName);
+                    string signingCertificatePath = blobClient.Uri.ToString();
+
+                    saml2Configuration.SigningCertificate = CertificateUtil.Load(
+                        signingCertificatePath,
+                        Configuration[$"{configKey}:CertificatePassword"]
+                    );
+                }
+
                 saml2Configuration.AllowedAudienceUris.Add(saml2Configuration.Issuer);
 
                 var httpClientFactory = serviceProvider.GetService<IHttpClientFactory>();
