@@ -39,13 +39,6 @@ namespace KeycloakSamlAuth
                 // Load signing certificate
                 if (AppEnvironment.IsDevelopment())
                 {
-                    saml2Configuration.SigningCertificate = CertificateUtil.Load(
-                        AppEnvironment.MapToPhysicalFilePath(Configuration[$"{configKey}:CertificateFile"]),
-                        Configuration[$"{configKey}:CertificatePassword"]
-                    );
-                }
-                else
-                {
                     string connectionString = Configuration[$"{configKey}:BlobStorage"];
                     string containerName = "kcdemo";
                     string blobName = "kcdemo_keystore.p12";
@@ -55,6 +48,14 @@ namespace KeycloakSamlAuth
 
                     saml2Configuration.SigningCertificate = CertificateUtil.Load(
                         signingCertificatePath,
+                        Configuration[$"{configKey}:CertificatePassword"]
+                    );
+
+                }
+                else
+                {
+                    saml2Configuration.SigningCertificate = CertificateUtil.Load(
+                        AppEnvironment.MapToPhysicalFilePath(Configuration[$"{configKey}:CertificateFile"]),
                         Configuration[$"{configKey}:CertificatePassword"]
                     );
                 }
