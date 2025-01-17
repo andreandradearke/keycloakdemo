@@ -68,11 +68,11 @@ namespace KeycloakSamlAuth
                 }
 
                 
-                saml2Configuration.AllowedAudienceUris.Add(Configuration[$"{configKey}:AppUrl"]);
+                saml2Configuration.AllowedAudienceUris.Add(saml2Configuration.Issuer);
 
                 var httpClientFactory = serviceProvider.GetService<IHttpClientFactory>();
                 var entityDescriptor = new EntityDescriptor();
-                entityDescriptor.ReadIdPSsoDescriptorFromUrlAsync(httpClientFactory, new Uri(Configuration[$"{configKey}:IdpMetadataUrl"])).GetAwaiter().GetResult();
+                entityDescriptor.ReadIdPSsoDescriptorFromUrlAsync(httpClientFactory, new Uri(Configuration["Saml2:IdpMetadataUrl"])).GetAwaiter().GetResult();
                 if (entityDescriptor.IdPSsoDescriptor != null)
                 {
                     saml2Configuration.AllowedIssuer = entityDescriptor.EntityId;
