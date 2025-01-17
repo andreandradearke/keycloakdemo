@@ -100,7 +100,7 @@ namespace KeycloakSamlAuth
                 {
                     throw new Exception("IdPSsoDescriptor not loaded from metadata.");
                 }
-                
+                saml2Configuration.CertificateValidationMode = System.ServiceModel.Security.X509CertificateValidationMode.None;
                 return saml2Configuration;
             });
 
@@ -108,7 +108,6 @@ namespace KeycloakSamlAuth
             services.AddHttpClient();
             services.AddControllersWithViews();
         }
-
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
