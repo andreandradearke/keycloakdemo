@@ -8,9 +8,11 @@
     {
         <span class="navbar-text" style="margin-right:10px;">Hello</span>
     }
-    <form class="form-inline" asp-controller="Auth" asp-action="Logout">
+
+    @using (Html.BeginForm("Logout", "Auth"))
+    {
         <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
-    </form>
+    }
 }
 else
 {
@@ -19,6 +21,4 @@ else
             <a class="nav-link text-dark" href="@Url.Action("Login", "Auth", new { returnUrl = Context.Request.Path })">Login</a>
         </li>
     </ul>
-
-
 }
